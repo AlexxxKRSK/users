@@ -1,7 +1,6 @@
-package com.example.users.domain;
+package com.example.users.entities;
 
 import javax.persistence.*;
-import java.util.List;
 import java.util.Set;
 
 @Entity(name = "roles")
@@ -10,6 +9,7 @@ public class Role {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
+    @Column(unique = true)
     private String name;
 
     @ManyToMany(mappedBy = "roles")

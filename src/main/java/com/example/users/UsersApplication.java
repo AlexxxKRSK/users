@@ -1,7 +1,7 @@
 package com.example.users;
 
-import com.example.users.domain.Role;
-import com.example.users.domain.User;
+import com.example.users.entities.Role;
+import com.example.users.entities.User;
 import com.example.users.repositories.RoleRepository;
 import com.example.users.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,22 +27,33 @@ public class UsersApplication {
     }
 
     @EventListener(ApplicationReadyEvent.class)
-    private void testJpaMethods() {
-        Role admin = new Role("Администратор");
-        roleRepository.save(admin);
-        Role analyst = new Role("Аналитик");
-        roleRepository.save(analyst);
-        Role operator = new Role("Оператор");
-        roleRepository.save(operator);
+    private void setInitialValues() {
+        String adminName = "Администратор";
+        Role admin = null;
+        if (!roleRepository.existsByName(adminName)) {
+            admin = new Role(adminName);
+            roleRepository.save(admin);
+        } else admin = roleRepository.getByName(adminName);
 
+        Role operator = null;
+        String operatorName = "Оператор";
+        if (!roleRepository.existsByName(operatorName)) {
+            operator = new Role(operatorName);
+            roleRepository.save(operator);
+        } else operator = roleRepository.getByName(operatorName);
+
+        Role analyst = null;
+        String analystName = "Аналитик";
+        if (!roleRepository.existsByName(analystName)) {
+            analyst = new Role(analystName);
+            roleRepository.save(analyst);
+        } else analyst = roleRepository.getByName(analystName);
 
         User vasya = new User();
         vasya.setName("Вася");
         vasya.setLogin("VasyanXXX");
         vasya.setPassword("1234");
-        Set<Role> vasyaRoles = new HashSet<>();
-        vasyaRoles.add(admin);
-        vasya.setRoles(vasyaRoles);
+        vasya.addRole(admin);
         userRepository.save(vasya);
 
         User petr = new User("Петя", "PGreat", "987");
@@ -52,7 +63,7 @@ public class UsersApplication {
         petr.setRoles(roles);
         userRepository.save(petr);
 
-        userRepository.findAll().forEach(System.out::println);
+
     }
 
 }
